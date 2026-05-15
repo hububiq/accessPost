@@ -11,6 +11,8 @@ InPost has a massive database of locker locations, but looking purely at the dat
 
 ## Demo & Description
 
+🚀 [**--link to deployed version--**](https://accesspost.streamlit.app)
+
 My own time constraint for this project was 3 days and I spent almost an entire day primarily finding the right problem to solve. Having analyzed the API's `.json` structure, I noticed a gap: while some lockers have an `easy_access_zone` flag set to true, proper accessibility assessment requires environmental context (curbs, paved paths, obstructions).
 
 To solve this, I designed a **modular ETL pipeline**:
@@ -23,9 +25,11 @@ To solve this, I designed a **modular ETL pipeline**:
 ![accessPost Transform with GoogleCloud](assets/enriching_start.jpg)
 
 ![accessPost Transform with GoogleCloud](assets/enriching_finish.jpg)
+
 3. **Load:** The enriched data is saved locally.
+
 4. **Visualize:** A Component-Based frontend built with Streamlit and PyDeck renders the data on an interactive, color-coded dark-mode map.
-5. **Link to deployed version:** 
+
 
 ![accessPost Map Showcase](assets/map_showcase.jpg)
 
@@ -157,6 +161,7 @@ You might see a login inquiry from Streamlit. Can skip it for now and, in your b
 1. **Network Optimization:** By the time of writing this README, I realized I should have revamped my fetching script to use HTTP Keep-Alive (`requests.Session()`) - in order to the API request was single for flipping the pages entire time. Establishing and tearing down TCP connections builds up network latency; fractions of seconds add up, making fetching time-consuming.
 2. **AI Logic Refinement:** Having a glance at a few images' URL to assess how precise was AI with descriptions, I realized some of them are just plain product pictures, not lockers in a working environment. Vertex AI gave these a score of 1 or 2, which is misleading. They should be labeled as N/A via better prompt engineering.
 3. **Analyze Smaller Cities:** I should probably take into consideration smaller sites, worse-urbanized areas, as infrastructure in richer cities is often better by default. Perhaps Warsaw shouldn't be the center of gravity for this project but it resonates the best with me, I live here and, not that far from the place I dwell, I have seen space for improvements around the locker.
+4. **Hovering Over Pins:** In the last call I noticed that reasoning info in webapp are sometimes cut and unavailable to be fully read.
 
 ## AI usage
 
@@ -172,13 +177,14 @@ A massive personal challenge for me here was maintaining a clean architecture. I
 
 **The "Agentic AI" Rabbit Hole:**
 
-I went down a rabbit hole thinking about how to improve this. Analyzing static locker images is great, but it lacks environmental context.
+I went down a rabbit hole thinking about how to improve this. Analyzing static locker images is great, but it lacks environmental big picture.
 
-I prototyped an idea for a **Vision Agent** utilizing the Google Street View API. By dropping an Agentic AI a short distance from the locker, it could take a virtual walk towards the destination, analyzing the sidewalk quality along the route. I ultimately rejected this idea because... there is a catch, or two. This could be far more sophisticated and time-complexed, integrations of Maps APIs are not free, InPost lockers' deployment rate is very high and the surroundings changes faster than Google drives their car around :O 
+I prototyped an idea for a **Vision Agent** utilizing the Google Street View API. By dropping an Agentic AI a short distance from the locker, it could take a virtual walk towards the destination, analyzing the sidewalk quality along the route. I ultimately rejected this idea because... there is a catch, or two. This could be far more sophisticated and time-complexed, integrations of Maps APIs are not free, InPost lockers' deployment rate is very high and the surroundings change faster than Google drives their car around :O 
 
-Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — there is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people.
+Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — the highest numbers of lockers are classified to score 2 (poor). There is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people. 
 
 I feel I proved my concept.
+
 
 **Docker secound thoughts**
 
@@ -188,12 +194,15 @@ I had been hesitant about introducing containerization into this project and fin
 
 Really don't wanna make this README longeish, but this funny case is worth mentioning. On first try while running visibly ready project I encountered odd quirk of viewing only 25 lockers in webapp while having 500 lockers enriched and loaded into `.json`. I was sure they are either overlapping and I just don't see them or they blend into the frontend theme colour so I took these paths and experimented. 
 
-Turned out I fetched from API 20 sets of the same 25 locations in Warsaw - pagination really did me dirty :eyes: In each of 25 location on the map, there were exactly the same 20 points being stacked on the top of each other. I needed to revamp my API request loop and make it work with pagination which didn't come naturally to me in the first place. After additional 2 hours of running the script, eventually got my results unique and visible. To debug I added the line in frontend layout, informing me how many of lockers are unique. 
+Turned out I fetched from API 20 sets of the same 25 locations in Warsaw - pagination really did me dirty. :eyes: In each of 25 location on the map, there were exactly the same 20 points being stacked on the top of each other. I needed to revamp my API request loop and make it work with pagination which didn't come naturally to me in the first place. After additional 2 hours of running the script, eventually got my results unique and visible. To debug I added the line in frontend layout, informing me how many of lockers are unique. 
 
-There is still not 500/500 hit but I decided not to dwell on it any more as it is negligible difference of few lockers.
+I still didn't hit 500/500 but I decided not to dwell on it any more as it is negligible difference of few lockers.
+
 
 **Onto the end**
 
-To summarize - I built ETL. Enriched API by AI-driven reasoning, plotted a map with score-pins and finally visualized it using Streamlit framework. I eventually had a chance to properly utilise Python and Pandas. Hopefuly this will get my foot in the InPost doorstep but if that is not going to happen, I took a good lesson of API integration and harnessing the Google Cloud models to touche important social problem. This stays with me as a standalone huge value. Thank you, InPost, for motivating me to do that.
+To summarize - I built ETL. Enriched API by AI-driven reasoning, plotted a map with score-pins and finally visualized it using Streamlit framework. I eventually had a chance to properly utilise Python and Pandas. Hopefuly this will get my foot in the InPost doorstep but if that is not going to happen, I took a good lesson of API integration and harnessing the Google Cloud models to touch important social problem. 
+
+This stays with me as a standalone huge value. Thank you, InPost, for motivating me to do that.
 
 *(Note for InPost evaluator: If you want to deactivate venv in you terminal, just type "deactivate" :smile:)*
