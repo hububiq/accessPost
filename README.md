@@ -104,7 +104,7 @@ This project relies on a `requirements.txt` file to guarantee 100% reproducibili
 
 **1. Clone the repository and set up a virtual environment (sandbox)**
 ```bash
-git clone <repo-url> accesPost
+git clone <repo-url> accessPost
 cd accessPost
 python3 -m venv venv
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
