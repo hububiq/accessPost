@@ -15,14 +15,22 @@ My own time constraint for this project was 3 days and I spent almost an entire 
 
 To solve this, I designed a **modular ETL pipeline**:
 1. **Extract:** A Python ingestion script fetches 500 unique lockers from Warsaw. Because the API's text search didn't reliably filter by street and the city filter broke pagination, I brute-forced the global API. It took me a while to realise that the 150,000+ database is sorted alphabetically by locker code, thus I optimized the script to fast-forward directly to page 1,300 to find `WAW` lockers efficiently.
+
 ![accessPost Api Fetch](assets/api_fetch.jpg)
+
 2. **Transform:** The URLs are sent to Google Cloud's Vertex AI (**Gemini 2.0 Flash**). Using strict prompt engineering, the AI acts as an accessibility auditor, returning a raw JSON object with a score (1-5) and a one-sentence reasoning based on curbs, surfaces, and obstructions.
+
 ![accessPost Transform with GoogleCloud](assets/enriching_start.jpg)
+
 ![accessPost Transform with GoogleCloud](assets/enriching_finish.jpg)
 3. **Load:** The enriched data is saved locally.
 4. **Visualize:** A Component-Based frontend built with Streamlit and PyDeck renders the data on an interactive, color-coded dark-mode map.
 5. **Link to deployed version:** 
+
 ![accessPost Map Showcase](assets/map_showcase.jpg)
+
+
+Hovering mouse on the pin shows you AI-generated reasoning
 ![accessPost Hovering feature](assets/hover_feature.jpg)
 
 *(Note for InPost evaluator: I highly recommend checking out the "Raw Audit Data" table in the web app to see the AI's reasoning!)*
@@ -99,18 +107,20 @@ source venv/bin/activate  # On Windows use: venv\Scripts\activate
 ```
 After you are done whit this step, you should see **(venv)** on the very left side of your command line. That means the separated virtual environment is up and running.
 
+
 **2. Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-You migh see something similar to this:
+You might see something similar to this going on in your terminal:
 
 ![accessPost Hovering feature](assets/installing_requirements.jpg)
 
 **3. Set up Environment Variables**
 
-*(Note: In my opinion, there is no point of rerunning the backend, fetching the data and analyse images with Vision AI, not to mention setting up Google Cloud account and generating JSON account key. On my 9 years old laptop with Windows+WSL setup it took more than 2 hours to process the data. This is heavy-lifting of the project and I have done it for you. If you just want to see the frontend, the `data/` folder already contains a pre-scored dataset of 500 Warsaw lockers which Streamlit will utilise. I highly recommend you to skip directly to point 4, step C. For the pipeline dataflow and auditing images I will embed screenshots)*
+*(Note: In my opinion, there is no point of rerunning the backend, fetching the data and analyse images with Vision AI, not to mention setting up Google Cloud account and generating JSON account key. On my 9 years old laptop with Windows+WSL setup it took more than 2 hours to process the data. This is heavy-lifting of the project and I have done it for you. If you just want to see the frontend, there is deployment link in Demo/Description paragraph. The `data/` folder already contains a pre-scored dataset of 500 Warsaw lockers which Streamlit will utilise. I highly recommend you to skip directly to point 4, step C. For the pipeline dataflow and auditing images I will embed screenshots)*
+
 
 Rename `.env.example` to `.env` and provide the path to your Google Cloud Service Account JSON file. Alternatively, set it directly in your terminal:
 ```bash
@@ -118,7 +128,9 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/keyfile.json"
 ```
 *(Ensure you update `PROJECT_ID` in `src/config.py` to match your GCP project).*
 
+
 **4. Run the Pipeline & App**
+
 *(Note: If you just want to see the frontend, the `data/` folder already contains a pre-scored dataset of 500 Warsaw lockers. You can skip directly to step C).*
 
 ```bash
@@ -132,12 +144,13 @@ python src/main.py
 python -m streamlit run src/frontend/app.py
 ```
 
-You might see a login inquiry from Streamlit. Can skip it for now and go directly to your local URL given as in example below.
+You might see a login inquiry from Streamlit. Can skip it for now and, in your browser, go directly to your local URL given as in example below.
 
 ![accessPost Hovering feature](assets/openning_localhost.jpg)
 
 
 *(Note: Using `python -m streamlit` guarantees the system uses the library installed inside the virtual environment rather than a global installation).*
+
 
 ## What I would do with more time
 
@@ -152,26 +165,35 @@ I used Google Gemini as a pair-programmer, autoreflection and troubleshooting bo
 ## Anything else?
 
 **My focus on Architecture:** 
-This project was especially fun because the path I was pursuing for some time and the role I would gladly land is Data Engineer position - in the middle of creative work I realised I'm actually building ETL. A massive personal challenge for me here was maintaining a clean architecture. I've done way bigger projects with way, way worse architecture and this time I've been paying close attention to it. Last group project at 42 grew autonomously without proper structure. Being the architect, I gathered constructive feedback from that experience, this time applying Separation of Concerns (SoC), wanting to do it as beautiful as it gets. Tried my best!
+
+This project was especially fun because the path I was pursuing for some time and the role I would gladly land is Data Engineer position - in the middle of creative work I realised I'm actually building ETL.
+
+A massive personal challenge for me here was maintaining a clean architecture. I've done way bigger projects with way, way worse architecture and this time I've been paying close attention to it. Last group project at 42 grew autonomously without proper structure. Being the architect, I gathered constructive feedback from that experience, this time applying Separation of Concerns (SoC), wanting to do it as beautiful as it gets. Tried my best!
 
 **The "Agentic AI" Rabbit Hole:**
+
 I went down a rabbit hole thinking about how to improve this. Analyzing static locker images is great, but it lacks environmental context.
 
 I prototyped an idea for a **Vision Agent** utilizing the Google Street View API. By dropping an Agentic AI a short distance from the locker, it could take a virtual walk towards the destination, analyzing the sidewalk quality along the route. I ultimately rejected this idea because... there is a catch, or two. This could be far more sophisticated and time-complexed, integrations of Maps APIs are not free, InPost lockers' deployment rate is very high and the surroundings changes faster than Google drives their car around :O 
 
-Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — there is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people and I feel I proved my concept.
+Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — there is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people.
+
+I feel I proved my concept.
 
 **Docker secound thoughts**
-I was hesitant about introducing containerization in this project and finally gave it up. It would only add code overhead while the Python "venv" (virtualisation feature) is hihgly enough and satisfactory for reproducibility.
+
+I had been hesitant about introducing containerization into this project and finally gave it up. It would only add code overhead while the Python "venv" (virtualisation feature) is highly enough and satisfactory for reproducibility.
 
 **Obstacle I couldn't identify**
-Really don't wanna make this README longeish, but this funny case is worth mentioning. On first try while running visibly ready project I encountered odd quirk of viewing only 25 lockers in webapp while having 500 lockers enriched and loaded into `.json`. I was sure they are either overlapping and I just dont see them or they blend into the frontend theme colour so I took these paths and experimented. 
 
-Turned out I fetched from API 20 sets of the same 25 locations in Warsaw - pagination really did me dirty :smiling_face_with_tear: In each of 25 location on the map, there were exactly the same 20 points being stacked on the top of each other. I needed to revamp my API request loop and make it work with pagination which didn't come naturally to me in the first place. After additional 2 hours of running the script, eventually got my results unique and visible. To debug I added the line in frontend layout, informing me how many of lockers are unique. 
+Really don't wanna make this README longeish, but this funny case is worth mentioning. On first try while running visibly ready project I encountered odd quirk of viewing only 25 lockers in webapp while having 500 lockers enriched and loaded into `.json`. I was sure they are either overlapping and I just don't see them or they blend into the frontend theme colour so I took these paths and experimented. 
+
+Turned out I fetched from API 20 sets of the same 25 locations in Warsaw - pagination really did me dirty :eyes: In each of 25 location on the map, there were exactly the same 20 points being stacked on the top of each other. I needed to revamp my API request loop and make it work with pagination which didn't come naturally to me in the first place. After additional 2 hours of running the script, eventually got my results unique and visible. To debug I added the line in frontend layout, informing me how many of lockers are unique. 
 
 There is still not 500/500 hit but I decided not to dwell on it any more as it is negligible difference of few lockers.
 
 **Onto the end**
-To summarize - I built ETL. Enriched API by AI-driven reasoning, plotted a map with score-pins and finally visualized it using Streamlit framework. I eventually had a chance to properly utilise Python and Pandas. Hopefuly this will get my foot in the InPost doorstep but if that is not going to happen, I took a good lesson of API integration and harnessing the Google Cloud models and touched important social problem. This stays with me as a standalone huge value. Thank you, InPost, for motivating me to do that.
 
-*(Note for InPost evaluator: If you want to deactivate venv in you terminal, just type "deactivate")*
+To summarize - I built ETL. Enriched API by AI-driven reasoning, plotted a map with score-pins and finally visualized it using Streamlit framework. I eventually had a chance to properly utilise Python and Pandas. Hopefuly this will get my foot in the InPost doorstep but if that is not going to happen, I took a good lesson of API integration and harnessing the Google Cloud models to touche important social problem. This stays with me as a standalone huge value. Thank you, InPost, for motivating me to do that.
+
+*(Note for InPost evaluator: If you want to deactivate venv in you terminal, just type "deactivate" :smile:)*
