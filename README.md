@@ -123,7 +123,7 @@ You might see something similar to this going on in your terminal:
 
 **3. Set up Environment Variables**
 
-*(Note: In my opinion, there is no point of rerunning the backend, fetching the data and analyse images with Vision AI, not to mention setting up Google Cloud account and generating JSON account key. On my 9 years old laptop with Windows+WSL setup it took more than 2 hours to process the data. This is heavy-lifting of the project and I have done it for you. If you just want to see the frontend, there is deployment link in Demo/Description paragraph. The `data/` folder already contains a pre-scored dataset of 500 Warsaw lockers which Streamlit will utilise. I highly recommend you to skip directly to point 4, step C. For the pipeline dataflow and auditing images I will embed screenshots)*
+*(Note: In my opinion, there is no point of rerunning the backend, fetching the data and analyse images with Vision AI, not to mention setting up Google Cloud account and generating JSON account key. On my 9 years old laptop with Windows+WSL setup it took more than 2 hours to process the data. This is heavy-lifting of the project and I have done it for you. If you just want to see the frontend, there is deployment link in Demo/Description paragraph. If you still wanna run script, the `data/` folder already contains a pre-scored dataset of 500 Warsaw lockers which Streamlit will utilise so you don't need to care for anything. I highly recommend you to skip directly to point 4, step C. For the pipeline dataflow and auditing images look for embedded screenshots above)*
 
 
 Rename `.env.example` to `.env` and provide the path to your Google Cloud Service Account JSON file. Alternatively, set it directly in your terminal:
@@ -179,9 +179,9 @@ A massive personal challenge for me here was maintaining a clean architecture. I
 
 I went down a rabbit hole thinking about how to improve this. Analyzing static locker images is great, but it lacks environmental big picture.
 
-I prototyped an idea for a **Vision Agent** utilizing the Google Street View API. By dropping an Agentic AI a short distance from the locker, it could take a virtual walk towards the destination, analyzing the sidewalk quality along the route. I ultimately rejected this idea because... there is a catch, or two. This could be far more sophisticated and time-complexed, integrations of Maps APIs are not free, InPost lockers' deployment rate is very high and the surroundings change faster than Google drives their car around :O 
+I prototyped an idea for a **Vision Agent** utilizing the Google Street View API. By dropping an Agentic AI a short distance from the locker, it could take a virtual walk towards the destination, analyzing the sidewalk quality along the route. I ultimately rejected this idea because... there is a catch, or two. This could be far more sophisticated and time-complexed, integrations of Maps APIs are not free, InPost lockers' deployment rate is very high and the surroundings change faster than Google drives their car around :oncoming_automobile:
 
-Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — the highest numbers of lockers are classified to score 2 (poor). There is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people. 
+Nevertheless, the output of my current pipeline is straightforward and visible in Streamlit-generated tables — the highest number of lockers is classified to score 2 (poor). There is definitely some collaborative work to be done between cities and InPost to avoid excluding impaired people. 
 
 I feel I proved my concept.
 
