@@ -15,13 +15,13 @@ def main():
 
     # 3. Apply Filters
     filtered_df = render_sidebar_filters(df)
-    st.markdown(f"**Showing {len(filtered_df)} lockers based on your filters**")
+    st.markdown(f"**Showing {len(filtered_df)} lockers based on filters**")
 
     # 4. Render Components
     render_map(filtered_df)
 
     unique_locations = len(filtered_df.drop_duplicates(subset=['lat', 'lon']))
-    st.warning(f"🕵️ Debug: Out of {len(filtered_df)} lockers, there are only {unique_locations} UNIQUE map coordinates!")
+    st.warning(f"🕵️ Debug: Out of {len(filtered_df)} lockers, there are {unique_locations} UNIQUE map coordinates!")
 
     render_data_table(filtered_df)
 

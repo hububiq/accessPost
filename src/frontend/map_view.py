@@ -15,7 +15,7 @@ def render_map(df: pd.DataFrame):
         "ScatterplotLayer", data=df,
         get_position="[lon, lat]", 
         get_color="color",
-        get_radius=100,
+        get_radius=70,
         radius_min_pixels=6,     
         radius_max_pixels=15,      
         pickable=True
