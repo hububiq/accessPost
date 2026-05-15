@@ -15,9 +15,17 @@ My own time constraint for this project was 3 days and I spent almost an entire 
 
 To solve this, I designed a **modular ETL pipeline**:
 1. **Extract:** A Python ingestion script fetches 500 unique lockers from Warsaw. Because the API's text search didn't reliably filter by street and the city filter broke pagination, I brute-forced the global API. It took me a while to realise that the 150,000+ database is sorted alphabetically by locker code, thus I optimized the script to fast-forward directly to page 1,300 to find `WAW` lockers efficiently.
+![accessPost Api Fetch](assets/api_fetch.jpg)
 2. **Transform:** The URLs are sent to Google Cloud's Vertex AI (**Gemini 2.0 Flash**). Using strict prompt engineering, the AI acts as an accessibility auditor, returning a raw JSON object with a score (1-5) and a one-sentence reasoning based on curbs, surfaces, and obstructions.
+![accessPost Transform with GoogleCloud](assets/enriching_start.jpg)
+![accessPost Transform with GoogleCloud](assets/enriching_finish.jpg)
 3. **Load:** The enriched data is saved locally.
 4. **Visualize:** A Component-Based frontend built with Streamlit and PyDeck renders the data on an interactive, color-coded dark-mode map.
+5. **Link to deployed version:** 
+![accessPost Map Showcase](assets/map_showcase.jpg)
+![accessPost Hovering feature](assets/hover_feature.jpg)
+
+*(Note for InPost evaluator: I highly recommend checking out the "Raw Audit Data" table in the web app to see the AI's reasoning!)*
 
 ### 🗂️ Project Architecture
 
@@ -30,6 +38,7 @@ accessPost/
 |   ├── enriching_finish.jpg
 |   ├── installing_requirements.jpg
 |   ├── openning_localhost.jpg
+|   ├── hover_feature.jpg
 |   └── map_showcase.jpg
 |
 ├── .streamlit/
@@ -46,7 +55,7 @@ accessPost/
 │   ├── config.py                       # Global settings and environment variables
 │   ├── data_handler.py                 # File I/O operations (Extract & Load)
 │   ├── vision_service.py               # Google Cloud Vertex AI integration
-│   ├── prompt.py                      # Prompt engineering and AI instructions
+│   ├── prompt.py                       # Prompt engineering and AI instructions
 │   ├── auditor.py                      # Core business logic (Transform)
 │   ├── main.py                         # ETL pipeline entry point
 │   │
@@ -88,11 +97,16 @@ cd accessPost
 python3 -m venv venv
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
 ```
+After you are done whit this step, you should see **(venv)** on the very left side of your command line. That means the separated virtual environment is up and running.
 
 **2. Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
+
+You migh see something similar to this:
+
+![accessPost Hovering feature](assets/installing_requirements.jpg)
 
 **3. Set up Environment Variables**
 
@@ -117,6 +131,12 @@ python src/main.py
 # C. Run the Interactive Map
 python -m streamlit run src/frontend/app.py
 ```
+
+You might see a login inquiry from Streamlit. Can skip it for now and go directly to your local URL given as in example below.
+
+![accessPost Hovering feature](assets/openning_localhost.jpg)
+
+
 *(Note: Using `python -m streamlit` guarantees the system uses the library installed inside the virtual environment rather than a global installation).*
 
 ## What I would do with more time
@@ -154,4 +174,4 @@ There is still not 500/500 hit but I decided not to dwell on it any more as it i
 **Onto the end**
 To summarize - I built ETL. Enriched API by AI-driven reasoning, plotted a map with score-pins and finally visualized it using Streamlit framework. I eventually had a chance to properly utilise Python and Pandas. Hopefuly this will get my foot in the InPost doorstep but if that is not going to happen, I took a good lesson of API integration and harnessing the Google Cloud models and touched important social problem. This stays with me as a standalone huge value. Thank you, InPost, for motivating me to do that.
 
-*(Note for InPost evaluator: I highly recommend checking out the "Raw Audit Data" table in the web app to see the AI's reasoning! Also, if you want to deactivate venv in you terminal, just type "deactivate")*
+*(Note for InPost evaluator: If you want to deactivate venv in you terminal, just type "deactivate")*
