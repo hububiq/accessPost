@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 def setup_header():
-    st.set_page_config(page_title="AccessiPost", page_icon="♿", layout="wide")
+    st.set_page_config(page_title="accessPost", page_icon="♿", layout="wide")
     st.title("♿ accessPost")
     st.subheader("AI-Powered Accessibility Audit for InPost Lockers")
     st.markdown("🟢 Good (4-5) | 🟠 Moderate (3) | 🔴 Poor (1-2) | 🔵 No Data (0)")
